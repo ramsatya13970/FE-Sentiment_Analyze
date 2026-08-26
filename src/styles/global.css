@@ -1,0 +1,56 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+input:focus,
+button:focus {
+  outline: 2px solid #2f6fed;
+  outline-offset: 1px;
+}
+
+.cx-input {
+  background: #0e1626;
+  border: 1px solid #263252;
+  color: #eaf0fa;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  width: 100%;
+}
+
+.cx-btn {
+  background: #2f6fed;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 9px 16px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.cx-btn:hover {
+  background: #2559c7;
+}
+
+.cx-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (max-width: 860px) {
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
