@@ -1,0 +1,28 @@
+.flow-step {
+  flex: 1;
+  min-width: 160px;
+  padding: 22px 16px;
+  border: 1px solid var(--flow-color-border);
+  border-radius: 10px;
+  background: var(--flow-bg);
+  text-align: center;
+}
+
+.flow-step__title {
+  color: var(--text-color);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.flow-step__sub {
+  margin-top: 6px;
+  color: var(--text-dim-color);
+  font-size: 12px;
+}
+
+.flow-step__arrow {
+  align-self: center;
+  padding: 0 4px;
+  color: var(--text-dim-color);
+  font-size: 18px;
+}

@@ -1,29 +1,18 @@
 import React from "react";
 import { C } from "../theme";
+import "./SettingsBar.css";
 
 export default function SettingsBar({ apiBase, setApiBase, locationId, setLocationId, onLoad, loading }) {
   return (
-    <div
-      style={{
-        background: "#0E1626",
-        borderBottom: `1px solid ${C.panelBorder}`,
-        padding: "14px 28px",
-        display: "flex",
-        gap: 10,
-        flexWrap: "wrap",
-        alignItems: "center",
-      }}
-    >
+    <div className="settings-bar" style={{ "--panel-border-color": C.panelBorder }}>
       <input
-        className="cx-input"
-        style={{ width: 260 }}
+        className="cx-input settings-bar__api-input"
         placeholder="API base URL, e.g. https://api.example.com"
         value={apiBase}
         onChange={(e) => setApiBase(e.target.value)}
       />
       <input
-        className="cx-input"
-        style={{ width: 300 }}
+        className="cx-input settings-bar__location-input"
         placeholder="location_id"
         value={locationId}
         onChange={(e) => setLocationId(e.target.value)}

@@ -1,0 +1,33 @@
+.labeled-bar {
+  margin-bottom: 16px;
+}
+
+.labeled-bar__header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.labeled-bar__label {
+  color: var(--text-color);
+}
+
+.labeled-bar__value {
+  color: var(--bar-color);
+  font-weight: 700;
+}
+
+.labeled-bar__track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #1b2438;
+}
+
+.labeled-bar__fill {
+  width: var(--bar-width);
+  height: 100%;
+  border-radius: 5px;
+  background: var(--bar-color);
+}

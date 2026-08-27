@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import SettingsBar from "./components/SettingsBar";
 import OverviewTab from "./components/OverviewTab";
 import SentimentTab from "./components/SentimentTab";
+import "./App.css";
 
 const DEFAULT_LOCATION_ID =
   import.meta.env.VITE_DEFAULT_LOCATION_ID || "6b486d79-9fc7-4f35-bf6f-e037e3e10e0d";
@@ -41,7 +42,7 @@ export default function App() {
   const updatedAt = `Last updated: ${formatDate()}`;
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.text }}>
+    <div className="app-shell" style={{ "--app-bg": C.bg, "--text-color": C.text }}>
       <Header tab={tab} setTab={setTab} showSettings={showSettings} setShowSettings={setShowSettings} />
 
       {showSettings && (
@@ -55,17 +56,14 @@ export default function App() {
         />
       )}
 
-      <main style={{ padding: "26px 28px 60px", maxWidth: 1280, margin: "0 auto" }}>
+      <main className="app-main">
         {(usingSample || error) && (
           <div
+            className="app-status"
             style={{
-              background: error ? C.redBg : C.blueBg,
-              border: `1px solid ${error ? C.red : C.blue}55`,
-              borderRadius: 8,
-              padding: "9px 14px",
-              fontSize: 12.5,
-              color: error ? "#F79AA5" : "#9DB8F5",
-              marginBottom: 20,
+              "--status-bg": error ? C.redBg : C.blueBg,
+              "--status-border-color": `${error ? C.red : C.blue}55`,
+              "--status-text-color": error ? "#F79AA5" : "#9DB8F5",
             }}
           >
             {error
@@ -81,15 +79,7 @@ export default function App() {
         )}
       </main>
 
-      <footer
-        style={{
-          borderTop: `1px solid ${C.panelBorder}`,
-          padding: "14px 28px",
-          textAlign: "center",
-          fontSize: 11,
-          color: C.textDim,
-        }}
-      >
+      <footer className="app-footer" style={{ "--panel-border-color": C.panelBorder, "--text-dim-color": C.textDim }}>
         AI CX Intelligence Platform &nbsp;|&nbsp; Confidential &nbsp;|&nbsp; {new Date().getFullYear()}
       </footer>
     </div>

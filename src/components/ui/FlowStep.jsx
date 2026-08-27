@@ -1,24 +1,23 @@
 import React from "react";
 import { C } from "../../theme";
+import "./FlowStep.css";
 
 export default function FlowStep({ title, sub, color, bg, arrow }) {
   return (
     <>
       <div
+        className="flow-step"
         style={{
-          flex: 1,
-          minWidth: 160,
-          background: bg,
-          border: `1px solid ${color}88`,
-          borderRadius: 10,
-          padding: "22px 16px",
-          textAlign: "center",
+          "--flow-bg": bg,
+          "--flow-color-border": `${color}88`,
+          "--text-color": C.text,
+          "--text-dim-color": C.textDim,
         }}
       >
-        <div style={{ fontWeight: 700, fontSize: 15, color: C.text }}>{title}</div>
-        <div style={{ fontSize: 12, color: C.textDim, marginTop: 6 }}>{sub}</div>
+        <div className="flow-step__title">{title}</div>
+        <div className="flow-step__sub">{sub}</div>
       </div>
-      {arrow && <div style={{ color: C.textDim, fontSize: 18, alignSelf: "center", padding: "0 4px" }}>→</div>}
+      {arrow && <div className="flow-step__arrow">→</div>}
     </>
   );
 }

@@ -1,0 +1,28 @@
+.kpi-card {
+  flex: 1 1 220px;
+  min-width: 200px;
+  padding: 16px 18px;
+  border: 1px solid var(--kpi-color-border);
+  border-radius: 10px;
+  background: var(--kpi-bg);
+}
+
+.kpi-card__label {
+  color: var(--kpi-color);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.kpi-card__value {
+  margin-top: 8px;
+  color: var(--text-color);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.kpi-card__sub {
+  margin-top: 6px;
+  color: var(--text-dim-color);
+  font-size: 12px;
+}

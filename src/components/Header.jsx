@@ -1,25 +1,16 @@
 import React from "react";
 import { C } from "../theme";
+import "./Header.css";
 
 const NAV_ITEMS = ["Overview", "Sentiment", "Trends", "Reports", "Settings"];
 
 export default function Header({ tab, setTab, showSettings, setShowSettings }) {
   return (
-    <header
-      style={{
-        background: C.headerBlue,
-        padding: "16px 28px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: 12,
-      }}
-    >
-      <div style={{ fontWeight: 700, fontSize: 16, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
+    <header className="app-header" style={{ "--header-color": C.headerBlue }}>
+      <div className="app-header__brand">
         AI Customer Experience Intelligence Platform
       </div>
-      <nav style={{ display: "flex", gap: 22, fontSize: 13.5, alignItems: "center", flexWrap: "wrap" }}>
+      <nav className="app-header__nav">
         {NAV_ITEMS.map((item) => {
           const key = item.toLowerCase();
           const isActive = tab === key;
@@ -31,13 +22,9 @@ export default function Header({ tab, setTab, showSettings, setShowSettings }) {
                 if (key === "settings") setShowSettings((s) => !s);
                 else if (clickable) setTab(key);
               }}
-              style={{
-                color: isActive ? "#F5A623" : "rgba(255,255,255,0.85)",
-                borderBottom: isActive ? "2px solid #F5A623" : "2px solid transparent",
-                paddingBottom: 4,
-                cursor: clickable || key === "settings" ? "pointer" : "default",
-                opacity: clickable || key === "settings" ? 1 : 0.55,
-              }}
+              className={`app-header__item${isActive ? " app-header__item--active" : ""}${
+                clickable || key === "settings" ? " app-header__item--clickable" : " app-header__item--inactive"
+              }`}
             >
               {item}
             </span>

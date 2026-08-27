@@ -1,0 +1,36 @@
+.app-shell {
+  min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--text-color);
+}
+
+.app-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px 28px 60px;
+}
+
+.app-status {
+  margin-bottom: 20px;
+  padding: 9px 14px;
+  border: 1px solid var(--status-border-color);
+  border-radius: 8px;
+  background: var(--status-bg);
+  color: var(--status-text-color);
+  font-size: 12.5px;
+}
+
+.app-footer {
+  padding: 14px 28px;
+  border-top: 1px solid var(--panel-border-color);
+  color: var(--text-dim-color);
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .app-main {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}

@@ -1,0 +1,24 @@
+.settings-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--panel-border-color);
+  background: #0e1626;
+  flex-wrap: wrap;
+}
+
+.settings-bar__api-input {
+  width: 260px;
+}
+
+.settings-bar__location-input {
+  width: 300px;
+}
+
+@media (max-width: 560px) {
+  .settings-bar__api-input,
+  .settings-bar__location-input {
+    width: 100%;
+  }
+}

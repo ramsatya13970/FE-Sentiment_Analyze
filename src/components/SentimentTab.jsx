@@ -4,6 +4,7 @@ import { pretty, trendLabel } from "../lib/format";
 import KpiCard from "./ui/KpiCard";
 import Panel from "./ui/Panel";
 import LabeledBar from "./ui/LabeledBar";
+import "./SentimentTab.css";
 
 export default function SentimentTab({ data, locationId, updatedAt }) {
   const dist = data.sentiment_distribution || [];
@@ -11,58 +12,51 @@ export default function SentimentTab({ data, locationId, updatedAt }) {
 
   return (
     <>
-      <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>Output — Sentiment Analysis</div>
-      <div style={{ fontSize: 12.5, color: C.textDim, marginBottom: 22 }}>
-        {updatedAt} &nbsp;|&nbsp; Location: <span style={{ color: C.text }}>{locationId}</span>
+      <div className="sentiment__title">Output — Sentiment Analysis</div>
+      <div className="sentiment__meta" style={{ "--text-dim-color": C.textDim, "--text-color": C.text }}>
+        {updatedAt} &nbsp;|&nbsp; Location: <strong>{locationId}</strong>
       </div>
 
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 26 }}>
+      <div className="sentiment__kpis">
         <KpiCard label="POSITIVE SENTIMENT" value={`${data.positive_sentiment_percent}%`} color={C.green} bg={C.greenBg} />
         <KpiCard label="NEUTRAL SENTIMENT" value={`${data.neutral_sentiment_percent}%`} color={C.orange} bg={C.orangeBg} />
+        <KpiCard label="MIXED SENTIMENT" value={`${data.mixed_sentiment_percent}%`} color={C.purple} bg={C.purpleBg} />
         <KpiCard label="NEGATIVE SENTIMENT" value={`${data.negative_sentiment_percent}%`} color={C.red} bg={C.redBg} />
         <KpiCard label="AVG SCORE" value={`${data.cx_score} / 100`} color={C.blue} bg={C.blueBg} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }} className="grid-2">
+      <div className="sentiment__columns">
         <Panel title="Overall Sentiment Distribution">
           <LabeledBar label="Positive" pct={getPct("positive")} color={C.green} />
           <LabeledBar label="Neutral" pct={getPct("neutral")} color={C.orange} />
           <LabeledBar label="Mixed" pct={getPct("mixed")} color={C.purple} />
           <LabeledBar label="Negative" pct={getPct("negative")} color={C.red} />
-          <div
-            style={{
-              marginTop: 4,
-              background: C.blueBg,
-              border: `1px solid ${C.blue}88`,
-              borderRadius: 8,
-              padding: "10px 14px",
-              textAlign: "center",
-              fontWeight: 700,
-              color: C.blue,
-              fontSize: 14,
-            }}
-          >
+          <div className="sentiment__score" style={{ "--score-bg": C.blueBg, "--score-border-color": `${C.blue}88`, "--score-color": C.blue }}>
             Overall Score: {data.cx_score} / 100
           </div>
         </Panel>
 
         <Panel title="Sentiment by Source">
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div className="sentiment__source-list">
             {(data.source_sentiment || []).map((s) => (
               <div key={s.source}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
-                  <span style={{ textTransform: "capitalize", color: C.text }}>{s.source}</span>
-                  <span style={{ color: C.textDim }}>
-                    <span style={{ color: C.green, fontWeight: 700 }}>{s.positive_percent}%</span>
+                <div className="sentiment__source-header" style={{ "--text-color": C.text, "--text-dim-color": C.textDim }}>
+                  <span className="sentiment__source-name">{s.source}</span>
+                  <span className="sentiment__source-values">
+                    <span className="sentiment__positive" style={{ "--positive-color": C.green }}>{s.positive_percent}%</span>
                     {"  "}
-                    <span style={{ color: C.red, fontWeight: 700 }}>{s.negative_percent}%</span>
+                     <span className="sentiment__neutral" style={{ "--neutral-color": C.orange }}>{s.neutral_percent}%</span>
+                    {"  "}
+                    <span className="sentiment__mixed" style={{ "--mixed-color": C.purple }}>{s.mixed_percent}%</span>
+                    {"  "}
+                    <span className="sentiment__negative" style={{ "--negative-color": C.red }}>{s.negative_percent}%</span>
                   </span>
                 </div>
-                <div style={{ display: "flex", height: 9, borderRadius: 5, overflow: "hidden", background: "#1B2438" }}>
-                  <div style={{ width: `${s.positive_percent}%`, background: C.green }} />
-                  <div style={{ width: `${s.neutral_percent}%`, background: C.orange }} />
-                  <div style={{ width: `${s.mixed_percent}%`, background: C.purple }} />
-                  <div style={{ width: `${s.negative_percent}%`, background: C.red }} />
+                <div className="sentiment__source-track">
+                  <div className="sentiment__source-positive" style={{ width: `${s.positive_percent}%`, "--positive-color": C.green }} />
+                  <div className="sentiment__source-neutral" style={{ width: `${s.neutral_percent}%`, "--neutral-color": C.orange }} />
+                  <div className="sentiment__source-mixed" style={{ width: `${s.mixed_percent}%`, "--mixed-color": C.purple }} />
+                  <div className="sentiment__source-negative" style={{ width: `${s.negative_percent}%`, "--negative-color": C.red }} />
                 </div>
               </div>
             ))}
@@ -76,16 +70,8 @@ export default function SentimentTab({ data, locationId, updatedAt }) {
       {/* Topic-level table */}
       <Panel title="Topic-Level Sentiment Breakdown">
         <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.3fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr",
-            fontSize: 11,
-            letterSpacing: 0.5,
-            textTransform: "uppercase",
-            color: C.textDim,
-            padding: "0 4px 10px",
-            borderBottom: `1px solid ${C.panelBorder}`,
-          }}
+          className="sentiment__table-header"
+          style={{ "--text-dim-color": C.textDim, "--panel-border-color": C.panelBorder }}
         >
           <div>Topic</div>
           <div style={{ textAlign: "right" }}>Volume</div>
@@ -99,21 +85,15 @@ export default function SentimentTab({ data, locationId, updatedAt }) {
           return (
             <div
               key={a.aspect}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1.3fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr",
-                fontSize: 13,
-                padding: "11px 4px",
-                borderBottom: `1px solid ${C.panelBorder}`,
-                alignItems: "center",
-              }}
+              className="sentiment__table-row"
+              style={{ "--panel-border-color": C.panelBorder }}
             >
-              <div style={{ color: C.text }}>{pretty(a.aspect)}</div>
-              <div style={{ textAlign: "right", color: C.textDim }}>{a.mentions}</div>
-              <div style={{ textAlign: "right", color: C.green }}>{a.positive_percent}%</div>
-              <div style={{ textAlign: "right", color: C.orange }}>{a.neutral_percent}%</div>
-              <div style={{ textAlign: "right", color: C.red }}>{a.negative_percent}%</div>
-              <div style={{ textAlign: "right", color: t.color, fontWeight: 600 }}>
+              <div className="sentiment__topic" style={{ "--text-color": C.text }}>{pretty(a.aspect)}</div>
+              <div className="sentiment__volume" style={{ "--text-dim-color": C.textDim }}>{a.mentions}</div>
+              <div style={{ color: C.green }}>{a.positive_percent}%</div>
+              <div style={{ color: C.orange }}>{a.neutral_percent}%</div>
+              <div style={{ color: C.red }}>{a.negative_percent}%</div>
+              <div className="sentiment__trend" style={{ color: t.color }}>
                 {t.arrow} {t.label}
               </div>
             </div>

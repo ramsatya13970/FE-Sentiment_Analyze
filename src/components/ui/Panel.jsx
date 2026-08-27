@@ -1,11 +1,20 @@
 import React from "react";
 import { C } from "../../theme";
+import "./Panel.css";
 
 export default function Panel({ title, right, children, style }) {
   return (
-    <div style={{ background: C.panel, border: `1px solid ${C.panelBorder}`, borderRadius: 12, padding: 20, ...style }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-        <div style={{ fontWeight: 700, fontSize: 14.5, color: C.text }}>{title}</div>
+    <div
+      className="panel"
+      style={{
+        "--panel-color": C.panel,
+        "--panel-border-color": C.panelBorder,
+        "--text-color": C.text,
+        ...style,
+      }}
+    >
+      <div className="panel__header">
+        <div className="panel__title">{title}</div>
         {right}
       </div>
       {children}

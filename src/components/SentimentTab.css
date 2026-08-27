@@ -1,0 +1,96 @@
+.sentiment__columns {
+  margin-bottom: 20px;
+}
+
+.sentiment__source-list {
+  gap: 16px;
+}
+
+.sentiment__source-header,
+.sentiment__source-track {
+  display: flex;
+}
+
+.sentiment__source-header {
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.sentiment__source-name {
+  color: var(--text-color);
+  text-transform: capitalize;
+}
+
+.sentiment__source-values {
+  color: var(--text-dim-color);
+}
+
+.sentiment__positive,
+.sentiment__neutral,
+.sentiment__mixed,
+.sentiment__negative {
+  font-weight: 700;
+  margin-right:10px;
+}
+
+.sentiment__positive { color: var(--positive-color); }
+.sentiment__neutral { color: var(--neutral-color); }
+.sentiment__mixed { color: var(--mixed-color); }
+.sentiment__negative { color: var(--negative-color); }
+
+.sentiment__source-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #1b2438;
+}
+
+.sentiment__source-track > div { height: 100%; }
+.sentiment__source-positive { background: var(--positive-color); }
+.sentiment__source-neutral { background: var(--neutral-color); }
+.sentiment__source-mixed { background: var(--mixed-color); }
+.sentiment__source-negative { background: var(--negative-color); }
+
+.sentiment__score {
+  margin-top: 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--score-border-color);
+  border-radius: 8px;
+  background: var(--score-bg);
+  color: var(--score-color);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sentiment__table-header,
+.sentiment__table-row {
+  display: grid;
+  grid-template-columns: 1.3fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr;
+}
+
+.sentiment__table-header {
+  padding: 0 4px 10px;
+  border-bottom: 1px solid var(--panel-border-color);
+  color: var(--text-dim-color);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.sentiment__table-row {
+  align-items: center;
+  padding: 11px 4px;
+  border-bottom: 1px solid var(--panel-border-color);
+  font-size: 13px;
+}
+
+.sentiment__table-row > :not(:first-child),
+.sentiment__table-header > :not(:first-child) {
+  text-align: right;
+}
+
+.sentiment__topic { color: var(--text-color); }
+.sentiment__volume { color: var(--text-dim-color); }
+.sentiment__trend { font-weight: 600; }
