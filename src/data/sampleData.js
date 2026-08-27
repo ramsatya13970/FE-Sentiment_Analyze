@@ -11,6 +11,11 @@ export const SAMPLE_DATA = {
   negative_sentiment_percent: 10,
   open_pain_points: 3,
   emerging_trends_count: 3,
+  emerging_trends: [
+    { category: "other1", current_volume: 42, previous_volume: 0, growth_percent: 100 },
+    { category: "customer_support", current_volume: 5, previous_volume: 0, growth_percent: 100 },
+    { category: "product_quality", current_volume: 3, previous_volume: 0, growth_percent: 100 },
+  ],
   sentiment_distribution: [
     { sentiment: "positive", count: 37, percent: 74 },
     { sentiment: "neutral", count: 3, percent: 6 },

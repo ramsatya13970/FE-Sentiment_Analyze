@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { C } from "./theme";
 import { SAMPLE_DATA } from "./data/sampleData";
-import { fetchInsightsSummary } from "./lib/api";
+import { fetchInsightsSummary, fetchInsightsTrends } from "./lib/api";
 import { formatDate } from "./lib/format";
 import Header from "./components/Header";
 import SettingsBar from "./components/SettingsBar";
@@ -27,8 +27,11 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const json = await fetchInsightsSummary({ locationId, apiBase });
-      setData(json);
+      const [summary, trends] = await Promise.all([
+        fetchInsightsSummary({ locationId, apiBase }),
+        fetchInsightsTrends({ locationId, apiBase }),
+      ]);
+      setData({ ...summary, ...trends });
       setUsingSample(false);
     } catch (e) {
       setError(e.message || "Could not reach the insights API. Showing sample data instead.");

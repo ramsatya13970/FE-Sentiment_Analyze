@@ -15,10 +15,6 @@ export default function OverviewTab({ data, locationId, updatedAt }) {
       .slice(0, 5);
   }, [data]);
 
-  const trending = useMemo(() => {
-    return [...(data.aspect_sentiment || [])].sort((a, b) => b.mentions - a.mentions).slice(0, 5);
-  }, [data]);
-
   return (
     <>
       <div className="overview__title">Output — Insight Flow Overview</div>
@@ -72,16 +68,18 @@ export default function OverviewTab({ data, locationId, updatedAt }) {
           )}
         </Panel>
 
-        <Panel title="Trending Aspects" right={<span style={{ fontSize: 11, color: C.textDim }}>by mention volume</span>}>
+        <Panel title="Emerging Trends" right={<span style={{ fontSize: 11, color: C.textDim }}>by current volume</span>}>
           <div className="overview__trend-list">
-            {trending.map((t) => (
+            {(data.emerging_trends || []).map((t) => (
               <div
-                key={t.aspect}
+                key={t.category}
                 className="overview__trend-item"
                 style={{ "--panel-border-color": C.panelBorder }}
               >
-                <span className="overview__trend-name" style={{ "--text-color": C.text }}>{pretty(t.aspect)}</span>
-                <span className="overview__trend-count" style={{ "--success-color": C.green }}>{t.mentions} mentions</span>
+                <span className="overview__trend-name" style={{ "--text-color": C.text }}>{pretty(t.category)}</span>
+                <span className="overview__trend-count" style={{ "--success-color": C.green }}>
+                  {t.current_volume} mentions · {t.growth_percent}% growth
+                </span>
               </div>
             ))}
           </div>
