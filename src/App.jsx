@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { C } from "./theme";
-import { SAMPLE_DATA } from "./data/sampleData";
-import { fetchInsightsSummary, fetchInsightsTrends } from "./lib/api";
+// import { SAMPLE_DATA } from "./data/sampleData";
+import { fetchInsightsMetrics } from "./lib/api";
 import { formatDate } from "./lib/format";
 import Header from "./components/Header";
 import SettingsBar from "./components/SettingsBar";
@@ -16,31 +16,31 @@ const DEFAULT_API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 export default function App() {
   const [apiBase, setApiBase] = useState(DEFAULT_API_BASE);
   const [locationId, setLocationId] = useState(DEFAULT_LOCATION_ID);
-  const [data, setData] = useState(SAMPLE_DATA);
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [usingSample, setUsingSample] = useState(true);
   const [tab, setTab] = useState("overview");
   const [showSettings, setShowSettings] = useState(false);
+  const initialLoadStarted = useRef(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [summary, trends] = await Promise.all([
-        fetchInsightsSummary({ locationId, apiBase }),
-        fetchInsightsTrends({ locationId, apiBase }),
-      ]);
-      setData({ ...summary, ...trends });
-      setUsingSample(false);
+      const metrics = await fetchInsightsMetrics({ locationId, apiBase });
+      setData(metrics);
     } catch (e) {
-      setError(e.message || "Could not reach the insights API. Showing sample data instead.");
-      setData(SAMPLE_DATA);
-      setUsingSample(true);
+      setError(e.message || "Could not reach the insights API.");
     } finally {
       setLoading(false);
     }
   }, [apiBase, locationId]);
+
+  useEffect(() => {
+    if (initialLoadStarted.current) return;
+    initialLoadStarted.current = true;
+    loadData();
+  }, []);
 
   const updatedAt = `Last updated: ${formatDate()}`;
 
@@ -60,7 +60,7 @@ export default function App() {
       )}
 
       <main className="app-main">
-        {(usingSample || error) && (
+        {error && (
           <div
             className="app-status"
             style={{
@@ -69,17 +69,22 @@ export default function App() {
               "--status-text-color": error ? "#F79AA5" : "#9DB8F5",
             }}
           >
-            {error
-              ? error
-              : `Showing sample data. Click "Settings" in the nav bar above to point this at a live location_id and API base URL.`}
+            {error}
           </div>
         )}
 
-        {tab === "overview" ? (
-          <OverviewTab data={data} locationId={locationId} updatedAt={updatedAt} />
-        ) : (
-          <SentimentTab data={data} locationId={locationId} updatedAt={updatedAt} />
-        )}
+        {loading && !data ? (
+          <div className="app-loader" role="status" aria-label="Loading insights">
+            <span className="app-loader__spinner" />
+            <span>Loading insights...</span>
+          </div>
+        ) : data ? (
+          tab === "overview" ? (
+            <OverviewTab data={data} locationId={locationId} updatedAt={updatedAt} />
+          ) : (
+            <SentimentTab data={data} locationId={locationId} updatedAt={updatedAt} />
+          )
+        ) : null}
       </main>
 
       <footer className="app-footer" style={{ "--panel-border-color": C.panelBorder, "--text-dim-color": C.textDim }}>

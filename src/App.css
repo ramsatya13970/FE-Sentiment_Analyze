@@ -20,6 +20,31 @@
   font-size: 12.5px;
 }
 
+.app-loader {
+  display: flex;
+  min-height: 360px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-color);
+  font-size: 13px;
+}
+
+.app-loader__spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--text-color);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: app-loader-spin 0.75s linear infinite;
+}
+
+@keyframes app-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .app-footer {
   padding: 14px 28px;
   border-top: 1px solid var(--panel-border-color);

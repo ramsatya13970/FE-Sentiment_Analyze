@@ -1,19 +1,23 @@
 const DEFAULT_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
 /**
- * Fetch GET /api/v1/insights/summary?location_id=...
+ * Fetch GET /api/v1/insights/metrics?location_id=...
+ *
+ * This combined endpoint contains the complete dashboard payload in a single
+ * response, including sentiment distribution, topic breakdowns, and trend
+ * metadata used by the overview and sentiment views.
  *
  * @param {Object} opts
  * @param {string} opts.locationId - required location UUID
  * @param {string} [opts.apiBase] - overrides VITE_API_BASE_URL when provided
  * @param {AbortSignal} [opts.signal]
- * @returns {Promise<Object>} the parsed insights summary payload
+ * @returns {Promise<Object>} the parsed combined insights payload
  */
-export async function fetchInsightsSummary({ locationId, apiBase, signal } = {}) {
+export async function fetchInsightsMetrics({ locationId, apiBase, signal } = {}) {
   if (!locationId) throw new Error("locationId is required");
 
   const base = (apiBase ?? DEFAULT_BASE).replace(/\/+$/, "");
-  const url = `${base}/api/v1/insights/summary?location_id=${encodeURIComponent(locationId)}`;
+  const url = `${base}/api/v1/insights/metrics?location_id=${encodeURIComponent(locationId)}`;
 
   const res = await fetch(url, {
     method: "GET",
@@ -22,38 +26,21 @@ export async function fetchInsightsSummary({ locationId, apiBase, signal } = {})
   });
 
   if (!res.ok) {
-    throw new Error(`Insights summary request failed (${res.status} ${res.statusText})`);
+    throw new Error(`Insights metrics request failed (${res.status} ${res.statusText})`);
   }
 
   return res.json();
 }
 
 /**
- * Fetch GET /api/v1/insights/trends?location_id=...
- *
- * @param {Object} opts
- * @param {string} opts.locationId - required location UUID
- * @param {string} [opts.apiBase] - overrides VITE_API_BASE_URL when provided
- * @param {AbortSignal} [opts.signal]
- * @returns {Promise<Object>} the parsed trends payload
+ * Backward compatible wrappers. They delegate to the combined metrics endpoint.
  */
+export async function fetchInsightsSummary({ locationId, apiBase, signal } = {}) {
+  return fetchInsightsMetrics({ locationId, apiBase, signal });
+}
+
 export async function fetchInsightsTrends({ locationId, apiBase, signal } = {}) {
-  if (!locationId) throw new Error("locationId is required");
-
-  const base = (apiBase ?? DEFAULT_BASE).replace(/\/+$/, "");
-  const url = `${base}/api/v1/insights/trends?location_id=${encodeURIComponent(locationId)}`;
-
-  const res = await fetch(url, {
-    method: "GET",
-    headers: { Accept: "application/json" },
-    signal,
-  });
-
-  if (!res.ok) {
-    throw new Error(`Insights trends request failed (${res.status} ${res.statusText})`);
-  }
-
-  return res.json();
+  return fetchInsightsMetrics({ locationId, apiBase, signal });
 }
 
 /**
