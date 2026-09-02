@@ -95,6 +95,7 @@ export default function App() {
         locations={locations}
         locationId={locationId}
         setLocationId={setLocationId}
+        loading={loading}
       />
 
       {showSettings && (

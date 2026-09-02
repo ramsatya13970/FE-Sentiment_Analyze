@@ -5,7 +5,8 @@ export const C = {
   bg: "#0B1220",
   panel: "#111A2E",
   panelBorder: "#1E2A44",
-  headerBlue: "#1E48E0",
+  // headerBlue: "#1E48E0",
+  headerBlue: "#07195b",
   text: "#EAF0FA",
   textDim: "#8B96AC",
 

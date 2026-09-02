@@ -1,10 +1,14 @@
 .app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 16px 28px;
   background: var(--header-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
   flex-wrap: wrap;
 }
 

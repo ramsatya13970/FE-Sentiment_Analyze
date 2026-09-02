@@ -4,7 +4,18 @@ import "./Header.css";
 
 const NAV_ITEMS = ["Overview", "Sentiment", "Reviews", "Trends", "Reports", "Settings"];
 
-export default function Header({ tab, setTab, showSettings, setShowSettings, locations = [], locationId, setLocationId }) {
+export default function Header({
+  tab,
+  setTab,
+  showSettings,
+  setShowSettings,
+  locations = [],
+  locationId,
+  setLocationId,
+  loading = false,
+}) {
+  const isLocationLoading = loading && !!locationId;
+
   return (
     <header className="app-header" style={{ "--header-color": C.headerBlue }}>
       <div className="app-header__brand-row">
@@ -14,10 +25,12 @@ export default function Header({ tab, setTab, showSettings, setShowSettings, loc
           className="app-header__location-select"
           value={locationId || ""}
           onChange={(e) => setLocationId(e.target.value)}
-          disabled={locations.length === 0}
+          disabled={locations.length === 0 || isLocationLoading}
           aria-label="Select location"
         >
-          {locations.length === 0 ? (
+          {isLocationLoading ? (
+            <option value={locationId || ""}>Loading location…</option>
+          ) : locations.length === 0 ? (
             <option value="">Select location</option>
           ) : (
             locations.map((location) => (
