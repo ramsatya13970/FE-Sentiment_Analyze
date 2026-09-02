@@ -1,14 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import { C } from "../theme";
+import { fetchReviews } from "../lib/api";
 import { pretty, trendLabel } from "../lib/format";
 import KpiCard from "./ui/KpiCard";
 import Panel from "./ui/Panel";
 import LabeledBar from "./ui/LabeledBar";
 import "./SentimentTab.css";
 
-export default function SentimentTab({ data, locationName, updatedAt }) {
+const SENTIMENT_LABELS = {
+  positive: "Positive",
+  neutral: "Neutral",
+  negative: "Negative",
+};
+
+export default function SentimentTab({ data, locationName, locationId, updatedAt, apiBase }) {
+  const [reviewPopup, setReviewPopup] = useState({ open: false, aspect: "", sentiment: "", title: "", loading: false, items: [], error: "" });
   const dist = data.sentiment_distribution || [];
   const getPct = (name) => dist.find((d) => d.sentiment === name)?.percent ?? 0;
+
+  const openReviewPopup = async (aspect, sentiment = "") => {
+    setReviewPopup({
+      open: true,
+      aspect,
+      sentiment,
+      title: sentiment ? `${pretty(aspect)} • ${SENTIMENT_LABELS[sentiment] || pretty(sentiment)} reviews` : `${pretty(aspect)} reviews`,
+      loading: true,
+      items: [],
+      error: "",
+    });
+
+    try {
+      const params = {
+        location_id: locationId,
+        aspect,
+        page_size: 50,
+        sort: "newest",
+      };
+
+      if (sentiment) params.aspect_sentiment = sentiment;
+
+      const payload = await fetchReviews(params, apiBase);
+      const items = Array.isArray(payload.items) ? payload.items : [];
+      setReviewPopup((current) => ({ ...current, loading: false, items, error: items.length ? "" : "No matching reviews found." }));
+    } catch (error) {
+      setReviewPopup((current) => ({
+        ...current,
+        loading: false,
+        error: error.message || "Could not load reviews for this topic.",
+      }));
+    }
+  };
+
+  const closeReviewPopup = () => {
+    setReviewPopup({ open: false, aspect: "", sentiment: "", title: "", loading: false, items: [], error: "" });
+  };
 
   return (
     <>
@@ -45,7 +90,7 @@ export default function SentimentTab({ data, locationName, updatedAt }) {
                   <span className="sentiment__source-values">
                     <span className="sentiment__positive" style={{ "--positive-color": C.green }}>{s.positive_percent}%</span>
                     {"  "}
-                     <span className="sentiment__neutral" style={{ "--neutral-color": C.orange }}>{s.neutral_percent}%</span>
+                    <span className="sentiment__neutral" style={{ "--neutral-color": C.orange }}>{s.neutral_percent}%</span>
                     {"  "}
                     <span className="sentiment__mixed" style={{ "--mixed-color": C.purple }}>{s.mixed_percent}%</span>
                     {"  "}
@@ -67,7 +112,6 @@ export default function SentimentTab({ data, locationName, updatedAt }) {
         </Panel>
       </div>
 
-      {/* Topic-level table */}
       <Panel title="Topic-Level Sentiment Breakdown">
         <div
           className="sentiment__table-header"
@@ -88,11 +132,23 @@ export default function SentimentTab({ data, locationName, updatedAt }) {
               className="sentiment__table-row"
               style={{ "--panel-border-color": C.panelBorder }}
             >
-              <div className="sentiment__topic" style={{ "--text-color": C.text }}>{pretty(a.aspect)}</div>
+              <div
+                className="sentiment__topic sentiment__clickable"
+                style={{ "--text-color": C.text }}
+                onClick={() => openReviewPopup(a.aspect)}
+              >
+                {pretty(a.aspect)}
+              </div>
               <div className="sentiment__volume" style={{ "--text-dim-color": C.textDim }}>{a.mentions}</div>
-              <div style={{ color: C.green }}>{a.positive_percent}%</div>
-              <div style={{ color: C.orange }}>{a.neutral_percent}%</div>
-              <div style={{ color: C.red }}>{a.negative_percent}%</div>
+              <div className="sentiment__clickable" style={{ color: C.green }} onClick={() => openReviewPopup(a.aspect, "positive")}>
+                {a.positive_percent}%
+              </div>
+              <div className="sentiment__clickable" style={{ color: C.orange }} onClick={() => openReviewPopup(a.aspect, "neutral")}>
+                {a.neutral_percent}%
+              </div>
+              <div className="sentiment__clickable" style={{ color: C.red }} onClick={() => openReviewPopup(a.aspect, "negative")}>
+                {a.negative_percent}%
+              </div>
               <div className="sentiment__trend" style={{ color: t.color }}>
                 {t.arrow} {t.label}
               </div>
@@ -100,6 +156,57 @@ export default function SentimentTab({ data, locationName, updatedAt }) {
           );
         })}
       </Panel>
+
+      {reviewPopup.open && (
+        <div className="sentiment__modal-backdrop" onClick={closeReviewPopup}>
+          <div className="sentiment__modal" onClick={(event) => event.stopPropagation()}>
+            <div className="sentiment__modal-header">
+              <div>
+                <div className="sentiment__modal-title">{reviewPopup.title}</div>
+                <div className="sentiment__modal-subtitle">{locationName}</div>
+              </div>
+              <button type="button" className="sentiment__modal-close" onClick={closeReviewPopup}>
+                Close
+              </button>
+            </div>
+
+            {reviewPopup.loading ? (
+              <div className="sentiment__modal-loading">Loading related reviews...</div>
+            ) : reviewPopup.error ? (
+              <div className="sentiment__modal-empty sentiment__modal-error">{reviewPopup.error}</div>
+            ) : reviewPopup.items.length === 0 ? (
+              <div className="sentiment__modal-empty">No reviews found for this filter.</div>
+            ) : (
+              <div className="sentiment__modal-list">
+                {reviewPopup.items.map((review) => {
+                  const text = review.review_text?.translated || review.review_text?.cleaned || review.review_text?.raw || "No review text available.";
+                  const sentiment = review.analysis?.sentiment || "neutral";
+                  const aspectText = review.analysis?.aspects?.map((aspect) => pretty(aspect.name)).join(", ") || "General";
+                  const date = review.review_date ? new Date(review.review_date).toLocaleDateString("en-GB") : "Unknown date";
+                  return (
+                    <article key={review.review_id} className="sentiment__modal-review">
+                      <div className="sentiment__modal-review-top">
+                        <span className="sentiment__modal-badge" style={{ background: `${C[sentiment === "positive" ? "green" : sentiment === "neutral" ? "orange" : sentiment === "mixed" ? "purple" : "red"]}22`, color: C[sentiment === "positive" ? "green" : sentiment === "neutral" ? "orange" : sentiment === "mixed" ? "purple" : "red"] }}>
+                          {pretty(sentiment)}
+                        </span>
+                        <span className="sentiment__modal-date">{date}</span>
+                      </div>
+
+                      <div className="sentiment__modal-review-body">{text}</div>
+
+                      <div className="sentiment__modal-review-meta">
+                        <span>Aspect: {aspectText}</span>
+                        <span>Source: {review.source_platform}</span>
+                        <span>Rating: {review.rating ?? "N/A"}</span>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }

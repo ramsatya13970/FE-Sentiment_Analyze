@@ -132,7 +132,13 @@ export default function App() {
           ) : tab === "reviews" ? (
             <ReviewsTab locationName={locationName} locationId={locationId} updatedAt={updatedAt} apiBase={apiBase} />
           ) : (
-            <SentimentTab data={data} locationName={locationName} locationId={locationId} updatedAt={updatedAt} />
+            <SentimentTab
+              data={data}
+              locationName={locationName}
+              locationId={locationId}
+              updatedAt={updatedAt}
+              apiBase={apiBase}
+            />
           )
         ) : null}
       </main>

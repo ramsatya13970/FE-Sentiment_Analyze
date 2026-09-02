@@ -94,3 +94,136 @@
 .sentiment__topic { color: var(--text-color); }
 .sentiment__volume { color: var(--text-dim-color); }
 .sentiment__trend { font-weight: 600; }
+
+.sentiment__clickable {
+  cursor: pointer;
+  transition: opacity 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.sentiment__clickable:hover {
+  opacity: 0.9;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-underline-offset: 3px;
+}
+
+.sentiment__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.8);
+  padding: 18px;
+}
+
+.sentiment__modal {
+  width: min(100%, 1600px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #0d162a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+  overflow: hidden;
+}
+
+.sentiment__modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(17, 26, 46, 0.9);
+}
+
+.sentiment__modal-title {
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.sentiment__modal-subtitle {
+  margin-top: 4px;
+  color: #8b96ac;
+  font-size: 0.8rem;
+}
+
+.sentiment__modal-close {
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  cursor: pointer;
+}
+
+.sentiment__modal-loading,
+.sentiment__modal-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #aeb8cf;
+  font-size: 15px;
+}
+
+.sentiment__modal-error {
+  color: #fca5a5;
+}
+
+.sentiment__modal-list {
+  flex: 1;
+  overflow: auto;
+  padding: 18px 20px 28px;
+}
+
+.sentiment__modal-review {
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(16, 23, 37, 0.9);
+  margin-bottom: 14px;
+}
+
+.sentiment__modal-review-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sentiment__modal-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.sentiment__modal-date {
+  color: #8b96ac;
+  font-size: 12px;
+}
+
+.sentiment__modal-review-body {
+  color: #edf2ff;
+  font-size: 15px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.sentiment__modal-review-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 12px;
+  color: #8b96ac;
+  font-size: 12px;
+}
