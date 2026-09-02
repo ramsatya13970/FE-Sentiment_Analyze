@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { C } from "./theme";
 // import { SAMPLE_DATA } from "./data/sampleData";
 import { fetchInsightsMetrics, fetchLocations, resolveLocationId } from "./lib/api";
@@ -78,21 +78,31 @@ export default function App() {
   }, [loadData]);
 
   const updatedAt = `Last updated: ${formatDate()}`;
+  const selectedLocationName = useMemo(
+    () =>
+      locations.find((location) => location.location_id === locationId)?.name ||
+      (locationId ? "Selected location" : "Rio shopping"),
+    [locationId, locations]
+  );
 
   return (
     <div className="app-shell" style={{ "--app-bg": C.bg, "--text-color": C.text }}>
-      <Header tab={tab} setTab={setTab} showSettings={showSettings} setShowSettings={setShowSettings} />
+      <Header
+        tab={tab}
+        setTab={setTab}
+        showSettings={showSettings}
+        setShowSettings={setShowSettings}
+        locations={locations}
+        locationId={locationId}
+        setLocationId={setLocationId}
+      />
 
       {showSettings && (
         <SettingsBar
           apiBase={apiBase}
           setApiBase={setApiBase}
-          locationId={locationId}
-          setLocationId={setLocationId}
           onLoad={handleLoad}
           loading={loading}
-          locations={locations}
-          locationsLoading={locationsLoading}
         />
       )}
 

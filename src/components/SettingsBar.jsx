@@ -2,16 +2,7 @@ import React from "react";
 import { C } from "../theme";
 import "./SettingsBar.css";
 
-export default function SettingsBar({
-  apiBase,
-  setApiBase,
-  locationId,
-  setLocationId,
-  onLoad,
-  loading,
-  locations,
-  locationsLoading,
-}) {
+export default function SettingsBar({ apiBase, setApiBase, onLoad, loading }) {
   return (
     <div className="settings-bar" style={{ "--panel-border-color": C.panelBorder }}>
       <input
@@ -21,24 +12,7 @@ export default function SettingsBar({
         onChange={(e) => setApiBase(e.target.value)}
       />
 
-      <select
-        className="cx-input settings-bar__location-input"
-        value={locationId || ""}
-        onChange={(e) => setLocationId(e.target.value)}
-        disabled={locationsLoading || locations.length === 0}
-      >
-        {locations.length === 0 ? (
-          <option value="">{locationId || "No locations available"}</option>
-        ) : (
-          locations.map((location) => (
-            <option key={location.location_id} value={location.location_id}>
-              {location.name}
-            </option>
-          ))
-        )}
-      </select>
-
-      <button className="cx-btn" onClick={onLoad} disabled={loading || !locationId}>
+      <button className="cx-btn" onClick={onLoad} disabled={loading}>
         {loading ? "Loading…" : "Load insights"}
       </button>
     </div>

@@ -8,6 +8,13 @@
   flex-wrap: wrap;
 }
 
+.app-header__brand-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .app-header__brand {
   display: flex;
   align-items: center;
@@ -15,6 +22,22 @@
   color: #fff;
   font-size: 16px;
   font-weight: 700;
+}
+
+.app-header__location-select {
+  min-width: 200px;
+  max-width: 340px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  outline: none;
+}
+
+.app-header__location-select option {
+  color: #0e172b;
 }
 
 .app-header__nav {
