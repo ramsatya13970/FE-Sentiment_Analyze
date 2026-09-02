@@ -2,7 +2,7 @@ import React from "react";
 import { C } from "../theme";
 import "./Header.css";
 
-const NAV_ITEMS = ["Overview", "Sentiment", "Trends", "Reports", "Settings"];
+const NAV_ITEMS = ["Overview", "Sentiment", "Reviews", "Trends", "Reports", "Settings"];
 
 export default function Header({ tab, setTab, showSettings, setShowSettings }) {
   return (
@@ -14,7 +14,7 @@ export default function Header({ tab, setTab, showSettings, setShowSettings }) {
         {NAV_ITEMS.map((item) => {
           const key = item.toLowerCase();
           const isActive = tab === key;
-          const clickable = key === "overview" || key === "sentiment";
+          const clickable = ["overview", "sentiment", "reviews"].includes(key);
           return (
             <span
               key={item}

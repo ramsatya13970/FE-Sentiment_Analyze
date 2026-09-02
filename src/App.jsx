@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import SettingsBar from "./components/SettingsBar";
 import OverviewTab from "./components/OverviewTab";
 import SentimentTab from "./components/SentimentTab";
+import ReviewsTab from "./components/ReviewsTab";
 import "./App.css";
 
 const DEFAULT_LOCATION_ID =
@@ -81,6 +82,8 @@ export default function App() {
         ) : data ? (
           tab === "overview" ? (
             <OverviewTab data={data} locationId={locationId} updatedAt={updatedAt} />
+          ) : tab === "reviews" ? (
+            <ReviewsTab locationId={locationId} updatedAt={updatedAt} apiBase={apiBase} />
           ) : (
             <SentimentTab data={data} locationId={locationId} updatedAt={updatedAt} />
           )
