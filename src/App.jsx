@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { C } from "./theme";
 // import { SAMPLE_DATA } from "./data/sampleData";
-import { fetchInsightsMetrics } from "./lib/api";
+import { fetchInsightsMetrics, fetchLocations, resolveLocationId } from "./lib/api";
 import { formatDate } from "./lib/format";
 import Header from "./components/Header";
 import SettingsBar from "./components/SettingsBar";
@@ -11,20 +11,45 @@ import ReviewsTab from "./components/ReviewsTab";
 import "./App.css";
 
 const DEFAULT_LOCATION_ID =
-  import.meta.env.VITE_DEFAULT_LOCATION_ID || "6b486d79-9fc7-4f35-bf6f-e037e3e10e0d";
-const DEFAULT_API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_DEFAULT_LOCATION_ID) ||
+  "7a2c3a49-c34c-4ba9-b35f-c583768c8487";
+const DEFAULT_API_BASE =
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE_URL) || "";
 
 export default function App() {
   const [apiBase, setApiBase] = useState(DEFAULT_API_BASE);
   const [locationId, setLocationId] = useState(DEFAULT_LOCATION_ID);
+  const [locations, setLocations] = useState([]);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [locationsLoading, setLocationsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tab, setTab] = useState("overview");
   const [showSettings, setShowSettings] = useState(false);
   const initialLoadStarted = useRef(false);
 
+  const selectedLocation = locations.find((location) => location.location_id === locationId) || null;
+  const locationName = selectedLocation?.name || locationId;
+
+  const loadLocations = useCallback(async () => {
+    setLocationsLoading(true);
+    try {
+      const nextLocations = await fetchLocations({ apiBase });
+      setLocations(nextLocations);
+      setLocationId((currentLocationId) =>
+        resolveLocationId(nextLocations, currentLocationId || DEFAULT_LOCATION_ID, "Rio shopping")
+      );
+    } catch (e) {
+      console.error("Could not load locations:", e);
+      setLocations([]);
+      setLocationId((currentLocationId) => currentLocationId || DEFAULT_LOCATION_ID);
+    } finally {
+      setLocationsLoading(false);
+    }
+  }, [apiBase]);
+
   const loadData = useCallback(async () => {
+    if (!locationId) return;
     setLoading(true);
     setError(null);
     try {
@@ -37,11 +62,20 @@ export default function App() {
     }
   }, [apiBase, locationId]);
 
+  const handleLoad = useCallback(async () => {
+    await loadLocations();
+  }, [loadLocations]);
+
   useEffect(() => {
     if (initialLoadStarted.current) return;
     initialLoadStarted.current = true;
+    loadLocations();
+  }, [loadLocations]);
+
+  useEffect(() => {
+    if (!locationId) return;
     loadData();
-  }, []);
+  }, [loadData]);
 
   const updatedAt = `Last updated: ${formatDate()}`;
 
@@ -55,8 +89,10 @@ export default function App() {
           setApiBase={setApiBase}
           locationId={locationId}
           setLocationId={setLocationId}
-          onLoad={loadData}
+          onLoad={handleLoad}
           loading={loading}
+          locations={locations}
+          locationsLoading={locationsLoading}
         />
       )}
 
@@ -81,11 +117,11 @@ export default function App() {
           </div>
         ) : data ? (
           tab === "overview" ? (
-            <OverviewTab data={data} locationId={locationId} updatedAt={updatedAt} />
+            <OverviewTab data={data} locationName={locationName} locationId={locationId} updatedAt={updatedAt} />
           ) : tab === "reviews" ? (
-            <ReviewsTab locationId={locationId} updatedAt={updatedAt} apiBase={apiBase} />
+            <ReviewsTab locationName={locationName} locationId={locationId} updatedAt={updatedAt} apiBase={apiBase} />
           ) : (
-            <SentimentTab data={data} locationId={locationId} updatedAt={updatedAt} />
+            <SentimentTab data={data} locationName={locationName} locationId={locationId} updatedAt={updatedAt} />
           )
         ) : null}
       </main>

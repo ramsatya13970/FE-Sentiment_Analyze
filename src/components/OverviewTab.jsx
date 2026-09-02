@@ -7,7 +7,7 @@ import Panel from "./ui/Panel";
 import LabeledBar from "./ui/LabeledBar";
 import "./OverviewTab.css";
 
-export default function OverviewTab({ data, locationId, updatedAt }) {
+export default function OverviewTab({ data, locationName, updatedAt }) {
   const complaints = useMemo(() => {
     return [...(data.aspect_sentiment || [])]
       .filter((a) => a.negative_percent > 0)
@@ -19,7 +19,7 @@ export default function OverviewTab({ data, locationId, updatedAt }) {
     <>
       <div className="overview__title">Output — Insight Flow Overview</div>
       <div className="overview__meta" style={{ "--text-dim-color": C.textDim, "--text-color": C.text }}>
-        {updatedAt} &nbsp;|&nbsp; Location: <strong>{locationId}</strong>
+        {updatedAt} &nbsp;|&nbsp; Location: <strong>{locationName}</strong>
       </div>
 
       {/* KPI row */}

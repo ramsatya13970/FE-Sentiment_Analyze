@@ -6,7 +6,7 @@ import Panel from "./ui/Panel";
 import LabeledBar from "./ui/LabeledBar";
 import "./SentimentTab.css";
 
-export default function SentimentTab({ data, locationId, updatedAt }) {
+export default function SentimentTab({ data, locationName, updatedAt }) {
   const dist = data.sentiment_distribution || [];
   const getPct = (name) => dist.find((d) => d.sentiment === name)?.percent ?? 0;
 
@@ -14,7 +14,7 @@ export default function SentimentTab({ data, locationId, updatedAt }) {
     <>
       <div className="sentiment__title">Output — Sentiment Analysis</div>
       <div className="sentiment__meta" style={{ "--text-dim-color": C.textDim, "--text-color": C.text }}>
-        {updatedAt} &nbsp;|&nbsp; Location: <strong>{locationId}</strong>
+        {updatedAt} &nbsp;|&nbsp; Location: <strong>{locationName}</strong>
       </div>
 
       <div className="sentiment__kpis">

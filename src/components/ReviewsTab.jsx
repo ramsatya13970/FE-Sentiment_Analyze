@@ -75,7 +75,7 @@ const sentimentColor = (sentiment) => {
   return C.textDim;
 };
 
-export default function ReviewsTab({ locationId, updatedAt, apiBase }) {
+export default function ReviewsTab({ locationId, locationName, updatedAt, apiBase }) {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -137,7 +137,7 @@ export default function ReviewsTab({ locationId, updatedAt, apiBase }) {
     <>
       <div className="reviews__title">Output — Review Explorer</div>
       <div className="reviews__meta" style={{ "--text-dim-color": C.textDim, "--text-color": C.text }}>
-        {updatedAt} &nbsp;|&nbsp; Location: <strong>{locationId}</strong>
+        {updatedAt} &nbsp;|&nbsp; Location: <strong>{locationName}</strong>
       </div>
 
       <div className="reviews__section reviews__section--filters">

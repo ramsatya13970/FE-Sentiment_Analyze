@@ -1,4 +1,40 @@
-const DEFAULT_BASE = import.meta.env.VITE_API_BASE_URL || "";
+const DEFAULT_BASE =
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE_URL) || "";
+
+export function resolveLocationId(locations = [], preferredId = "", fallbackName = "Rio shopping") {
+  const validLocations = locations.filter((location) => location && location.location_id);
+
+  if (preferredId) {
+    const preferredLocation = validLocations.find((location) => location.location_id === preferredId);
+    if (preferredLocation) return preferredLocation.location_id;
+  }
+
+  const normalizedFallbackName = fallbackName.trim().toLowerCase();
+  const fallbackLocation = validLocations.find(
+    (location) => (location.name || "").trim().toLowerCase() === normalizedFallbackName
+  );
+
+  if (fallbackLocation) return fallbackLocation.location_id;
+  return validLocations[0]?.location_id || preferredId || "";
+}
+
+export async function fetchLocations({ apiBase, signal } = {}) {
+  const base = (apiBase ?? DEFAULT_BASE).replace(/\/+$/, "");
+  const url = `${base}/api/v1/locations`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+    signal,
+  });
+
+  if (!res.ok) {
+    throw new Error(`Locations request failed (${res.status} ${res.statusText})`);
+  }
+
+  const payload = await res.json();
+  return Array.isArray(payload) ? payload : [];
+}
 
 /**
  * Fetch GET /api/v1/insights/metrics?location_id=...
