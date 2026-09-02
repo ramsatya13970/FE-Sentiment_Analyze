@@ -98,54 +98,56 @@ export default function App() {
         loading={loading}
       />
 
-      {showSettings && (
-        <SettingsBar
-          apiBase={apiBase}
-          setApiBase={setApiBase}
-          onLoad={handleLoad}
-          loading={loading}
-        />
-      )}
-
-      <main className="app-main">
-        {error && (
-          <div
-            className="app-status"
-            style={{
-              "--status-bg": error ? C.redBg : C.blueBg,
-              "--status-border-color": `${error ? C.red : C.blue}55`,
-              "--status-text-color": error ? "#F79AA5" : "#9DB8F5",
-            }}
-          >
-            {error}
-          </div>
+      <div className="app-content">
+        {showSettings && (
+          <SettingsBar
+            apiBase={apiBase}
+            setApiBase={setApiBase}
+            onLoad={handleLoad}
+            loading={loading}
+          />
         )}
 
-        {loading && !data ? (
-          <div className="app-loader" role="status" aria-label="Loading insights">
-            <span className="app-loader__spinner" />
-            <span>Loading insights...</span>
-          </div>
-        ) : data ? (
-          tab === "overview" ? (
-            <OverviewTab data={data} locationName={locationName} locationId={locationId} updatedAt={updatedAt} />
-          ) : tab === "reviews" ? (
-            <ReviewsTab locationName={locationName} locationId={locationId} updatedAt={updatedAt} apiBase={apiBase} />
-          ) : (
-            <SentimentTab
-              data={data}
-              locationName={locationName}
-              locationId={locationId}
-              updatedAt={updatedAt}
-              apiBase={apiBase}
-            />
-          )
-        ) : null}
-      </main>
+        <main className="app-main">
+          {error && (
+            <div
+              className="app-status"
+              style={{
+                "--status-bg": error ? C.redBg : C.blueBg,
+                "--status-border-color": `${error ? C.red : C.blue}55`,
+                "--status-text-color": error ? "#F79AA5" : "#9DB8F5",
+              }}
+            >
+              {error}
+            </div>
+          )}
 
-      <footer className="app-footer" style={{ "--panel-border-color": C.panelBorder, "--text-dim-color": C.textDim }}>
-        AI CX Intelligence Platform &nbsp;|&nbsp; Confidential &nbsp;|&nbsp; {new Date().getFullYear()}
-      </footer>
+          {loading && !data ? (
+            <div className="app-loader" role="status" aria-label="Loading insights">
+              <span className="app-loader__spinner" />
+              <span>Loading insights...</span>
+            </div>
+          ) : data ? (
+            tab === "overview" ? (
+              <OverviewTab data={data} locationName={locationName} locationId={locationId} updatedAt={updatedAt} />
+            ) : tab === "reviews" ? (
+              <ReviewsTab locationName={locationName} locationId={locationId} updatedAt={updatedAt} apiBase={apiBase} />
+            ) : (
+              <SentimentTab
+                data={data}
+                locationName={locationName}
+                locationId={locationId}
+                updatedAt={updatedAt}
+                apiBase={apiBase}
+              />
+            )
+          ) : null}
+        </main>
+
+        <footer className="app-footer" style={{ "--panel-border-color": C.panelBorder, "--text-dim-color": C.textDim }}>
+          AI CX Intelligence Platform &nbsp;|&nbsp; Confidential &nbsp;|&nbsp; {new Date().getFullYear()}
+        </footer>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,37 @@
 .app-shell {
-  min-height: 100vh;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
   background: var(--app-bg);
   color: var(--text-color);
+}
+
+.app-content {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-color: #426fd3 transparent;
+  scrollbar-width: thin;
+}
+
+.app-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.app-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-content::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #426fd3;
+  background-clip: padding-box;
+}
+
+.app-content::-webkit-scrollbar-thumb:hover {
+  background: #6f96ed;
+  background-clip: padding-box;
 }
 
 .app-main {
