@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { C } from "../theme";
 import { fetchReviews } from "../lib/api";
 import { pretty, trendLabel } from "../lib/format";
@@ -14,9 +14,77 @@ const SENTIMENT_LABELS = {
 };
 
 export default function SentimentTab({ data, locationName, locationId, updatedAt, apiBase }) {
-  const [reviewPopup, setReviewPopup] = useState({ open: false, aspect: "", sentiment: "", title: "", loading: false, items: [], error: "" });
+  const [reviewPopup, setReviewPopup] = useState({
+    open: false,
+    aspect: "",
+    sentiment: "",
+    title: "",
+    loading: false,
+    loadingMore: false,
+    items: [],
+    error: "",
+    hasMore: false,
+    nextCursor: null,
+  });
+  const [isModalAtBottom, setIsModalAtBottom] = useState(false);
+  const modalListRef = useRef(null);
   const dist = data.sentiment_distribution || [];
   const getPct = (name) => dist.find((d) => d.sentiment === name)?.percent ?? 0;
+
+  const handleReviewPopupScroll = (event) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    setIsModalAtBottom(scrollHeight - scrollTop - clientHeight <= 20);
+  };
+
+  const loadPopupReviews = async ({ aspect, sentiment, cursor, append = false } = {}) => {
+    if (!locationId) return;
+
+    setReviewPopup((current) => ({
+      ...current,
+      loading: !append,
+      loadingMore: append,
+      error: "",
+    }));
+
+    try {
+      const params = {
+        location_id: locationId,
+        aspect,
+        page_size: 50,
+        sort: "newest",
+        cursor,
+      };
+
+      if (sentiment) params.aspect_sentiment = sentiment;
+
+      const payload = await fetchReviews(params, apiBase);
+      const items = Array.isArray(payload.items) ? payload.items : [];
+      const hasMore = Boolean(payload.has_more);
+      const nextCursor = payload.next_cursor || null;
+
+      setReviewPopup((current) => ({
+        ...current,
+        loading: false,
+        loadingMore: false,
+        items: append ? [...(current.items || []), ...items] : items,
+        error: items.length ? "" : "No matching reviews found.",
+        hasMore,
+        nextCursor,
+      }));
+
+      if (modalListRef.current) {
+        const atBottom = modalListRef.current.scrollHeight - modalListRef.current.scrollTop - modalListRef.current.clientHeight <= 20;
+        setIsModalAtBottom(atBottom);
+      }
+    } catch (error) {
+      setReviewPopup((current) => ({
+        ...current,
+        loading: false,
+        loadingMore: false,
+        error: error.message || "Could not load reviews for this topic.",
+      }));
+    }
+  };
 
   const openReviewPopup = async (aspect, sentiment = "") => {
     setReviewPopup({
@@ -25,34 +93,29 @@ export default function SentimentTab({ data, locationName, locationId, updatedAt
       sentiment,
       title: sentiment ? `${pretty(aspect)} • ${SENTIMENT_LABELS[sentiment] || pretty(sentiment)} reviews` : `${pretty(aspect)} reviews`,
       loading: true,
+      loadingMore: false,
       items: [],
       error: "",
+      hasMore: false,
+      nextCursor: null,
     });
+    setIsModalAtBottom(false);
 
-    try {
-      const params = {
-        location_id: locationId,
-        aspect,
-        page_size: 50,
-        sort: "newest",
-      };
+    await loadPopupReviews({ aspect, sentiment });
+  };
 
-      if (sentiment) params.aspect_sentiment = sentiment;
-
-      const payload = await fetchReviews(params, apiBase);
-      const items = Array.isArray(payload.items) ? payload.items : [];
-      setReviewPopup((current) => ({ ...current, loading: false, items, error: items.length ? "" : "No matching reviews found." }));
-    } catch (error) {
-      setReviewPopup((current) => ({
-        ...current,
-        loading: false,
-        error: error.message || "Could not load reviews for this topic.",
-      }));
-    }
+  const loadMoreReviewPopup = async () => {
+    if (!reviewPopup.aspect || !reviewPopup.hasMore) return;
+    await loadPopupReviews({
+      aspect: reviewPopup.aspect,
+      sentiment: reviewPopup.sentiment,
+      cursor: reviewPopup.nextCursor,
+      append: true,
+    });
   };
 
   const closeReviewPopup = () => {
-    setReviewPopup({ open: false, aspect: "", sentiment: "", title: "", loading: false, items: [], error: "" });
+    setReviewPopup({ open: false, aspect: "", sentiment: "", title: "", loading: false, loadingMore: false, items: [], error: "", hasMore: false, nextCursor: null });
   };
 
   return (
@@ -177,32 +240,46 @@ export default function SentimentTab({ data, locationName, locationId, updatedAt
             ) : reviewPopup.items.length === 0 ? (
               <div className="sentiment__modal-empty">No reviews found for this filter.</div>
             ) : (
-              <div className="sentiment__modal-list">
-                {reviewPopup.items.map((review) => {
-                  const text = review.review_text?.translated || review.review_text?.cleaned || review.review_text?.raw || "No review text available.";
-                  const sentiment = review.analysis?.sentiment || "neutral";
-                  const aspectText = review.analysis?.aspects?.map((aspect) => pretty(aspect.name)).join(", ") || "General";
-                  const date = review.review_date ? new Date(review.review_date).toLocaleDateString("en-GB") : "Unknown date";
-                  return (
-                    <article key={review.review_id} className="sentiment__modal-review">
-                      <div className="sentiment__modal-review-top">
-                        <span className="sentiment__modal-badge" style={{ background: `${C[sentiment === "positive" ? "green" : sentiment === "neutral" ? "orange" : sentiment === "mixed" ? "purple" : "red"]}22`, color: C[sentiment === "positive" ? "green" : sentiment === "neutral" ? "orange" : sentiment === "mixed" ? "purple" : "red"] }}>
-                          {pretty(sentiment)}
-                        </span>
-                        <span className="sentiment__modal-date">{date}</span>
-                      </div>
+              <>
+                <div
+                  ref={modalListRef}
+                  className="sentiment__modal-list"
+                  onScroll={handleReviewPopupScroll}
+                >
+                  {reviewPopup.items.map((review) => {
+                    const text = review.review_text?.translated || review.review_text?.cleaned || review.review_text?.raw || "No review text available.";
+                    const sentiment = review.analysis?.sentiment || "neutral";
+                    const aspectText = review.analysis?.aspects?.map((aspect) => pretty(aspect.name)).join(", ") || "General";
+                    const date = review.review_date ? new Date(review.review_date).toLocaleDateString("en-GB") : "Unknown date";
+                    return (
+                      <article key={review.review_id} className="sentiment__modal-review">
+                        <div className="sentiment__modal-review-top">
+                          <span className="sentiment__modal-badge" style={{ background: `${C[sentiment === "positive" ? "green" : sentiment === "neutral" ? "orange" : sentiment === "mixed" ? "purple" : "red"]}22`, color: C[sentiment === "positive" ? "green" : sentiment === "neutral" ? "orange" : sentiment === "mixed" ? "purple" : "red"] }}>
+                            {pretty(sentiment)}
+                          </span>
+                          <span className="sentiment__modal-date">{date}</span>
+                        </div>
 
-                      <div className="sentiment__modal-review-body">{text}</div>
+                        <div className="sentiment__modal-review-body">{text}</div>
 
-                      <div className="sentiment__modal-review-meta">
-                        <span>Aspect: {aspectText}</span>
-                        <span>Source: {review.source_platform}</span>
-                        <span>Rating: {review.rating ?? "N/A"}</span>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
+                        <div className="sentiment__modal-review-meta">
+                          <span>Aspect: {aspectText}</span>
+                          <span>Source: {review.source_platform}</span>
+                          <span>Rating: {review.rating ?? "N/A"}</span>
+                        </div>
+                      </article>
+                    );
+                  })}
+
+                  {reviewPopup.hasMore && (
+                    <div className={`sentiment__modal-load-more-wrap${isModalAtBottom ? " sentiment__modal-load-more-wrap--visible" : ""}`}>
+                      <button type="button" className="sentiment__modal-load-more" onClick={loadMoreReviewPopup} disabled={reviewPopup.loadingMore}>
+                        {reviewPopup.loadingMore ? "Loading more..." : "Load more reviews"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
